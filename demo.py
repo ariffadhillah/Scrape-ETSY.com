@@ -12,7 +12,7 @@ header = {
 
 productlink = []
 
-for x in range(1 ,2):
+for x in range(1, 2):
     r = requests.get(f'https://www.etsy.com/c/clothing/womens-clothing/jackets-and-coats?ref=pagination&page={x}')
     soup = BeautifulSoup(r.content, 'lxml')
 
@@ -25,8 +25,10 @@ etsylist = []
 for link in productlink:
     r = requests.get(link, headers=header)
     soup = BeautifulSoup(r.content, 'lxml')
-
-    name = soup.find('h1', class_='wt-text-body-03 wt-line-height-tight wt-break-word').text.strip()
+    try:
+        name = soup.find('h1', class_='wt-text-body-03 wt-line-height-tight wt-break-word').text.strip()
+    except:
+        None
     try:
         sales = soup.find('div', class_='wt-display-inline-flex-xs wt-align-items-center wt-flex-wrap wt-mb-xs-2').text.strip().split("\n")[0]
     except:
@@ -40,8 +42,8 @@ for link in productlink:
     except:
         ranting = 'no ranting'
     description = soup.find('p', class_='wt-text-body-01 wt-break-word').text.strip()
-    vintage  = soup.find('li', class_="wt-list-unstyled wt-display-flex-xs wt-align-items-flex-start").text.strip().split("Vintage")  
-    materials  = soup.find('p', class_="wt-text-truncate").text.strip().split("Materials") 
+    vintage  = soup.find('li', class_="wt-list-unstyled wt-display-flex-xs wt-align-items-flex-start").text.strip()  
+    materials  = soup.find('p', class_="wt-text-truncate").text.strip() 
 
     etsy = {
         'name': name,
@@ -56,4 +58,5 @@ for link in productlink:
     etsylist.append(etsy)
     print('Saving: ', etsy['name'])
 df = pd.DataFrame(etsylist)
-# print(df.head(15))
+print(df.head(15))
+df.to_csv('data-Etsy.csv', encoding='utf-8')
